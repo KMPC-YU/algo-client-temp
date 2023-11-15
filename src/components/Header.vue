@@ -20,11 +20,7 @@
           |
         </li>
         <li>
-          <a class="nav-link" @click="logout">로그아웃</a>
-        </li>
-        <li v-if="isAdmin === true">
-          |
-          <router-link  class="nav-link" :to="{name: 'AdminDashboard'}">관리자</router-link>
+          <a class="nav-link" href="#" @click="logout">로그아웃</a>
         </li>
       </ul>
     </section>
@@ -78,10 +74,8 @@ export default {
       getBoardList('GENERAL')
       getBoardList('ANONYMOUS')
       getBoardList('QUESTION')
-      checkAdmin()
     })
 
-    const isAdmin = ref()
     const piniaStore = usePiniaStore()
     const isLoggedIn = computed(() => piniaStore.isLoggedIn)
     const nickname = computed(() => piniaStore.nickname)
@@ -104,18 +98,13 @@ export default {
       })
     }
 
-    const checkAdmin = () => {
-      AdminAPI.isAdmin().then(() => isAdmin.value = true).catch(() => isAdmin.value = false)
-    }
-
     const logout = () => {
       piniaStore.logout()
     }
 
     return {
-      isAdmin, isLoggedIn, nickname,
       noticeList, generalList, anonymousList, questionList,
-      logout
+      isLoggedIn, nickname, logout
     }
   }
 }

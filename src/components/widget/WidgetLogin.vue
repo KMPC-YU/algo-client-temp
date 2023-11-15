@@ -1,9 +1,9 @@
 <template>
   <div class="userContainer mb-5">
     <div class="inputsAndButtons">
-      <input type="text" class="form-control" name="email" placeholder="아이디">
-      <input type="password" class="form-control" name="password" placeholder="비밀번호">
-      <button class="btn btn-secondary form-control">로그인</button>
+      <input type="text" class="form-control" name="email" placeholder="아이디" v-model="username" @keyup.enter="login">
+      <input type="password" class="form-control" name="password" placeholder="비밀번호" v-model="password" @keyup.enter="login">
+      <button class="btn btn-secondary form-control" @click="login">로그인</button>
     </div>
     <div class="joinAndFindPassword">
       <router-link :to="{name: 'FindPassword'}">비밀번호 찾기</router-link>
@@ -26,11 +26,37 @@
 </template>
 
 <script>
+import { ref } from 'vue'
+import { usePiniaStore } from '@/stores'
+import router from '@/router/index.js'
+import Swal from 'sweetalert2'
+
 export default {
   setup() {
+    const piniaStore = usePiniaStore()
+    //TODO: 배포 시 정보 지우기!!!
+    const username = ref('testuser')
+    const password = ref('1234!@abc')
 
+    const login = async () => {
+      await piniaStore.login({
+        username: username.value,
+        password: password.value
+      }).then(() => {
+          router.push('/')
+      }).catch((err) => {
+        Swal.fire({
+          title: err.response.data.message,
+          icon: 'error',
+          showConfirmButton: false,
+          timer: 1500,
+        })
+      })
+    }
 
-    return {}
+    return {
+      username, password, login
+    }
   }
 }
 </script>

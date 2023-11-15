@@ -24,8 +24,8 @@
     </div>
     <div class="buttons">
       <div class="split">
-        <router-link :to="{name: 'Profile'}">프로필</router-link>
-        <a href="/logout">로그아웃</a>
+        <!-- <router-link :to="{name: 'Profile', params: { nickname: nickname }}">프로필</router-link> -->
+        <a href="#" @click="logout">로그아웃</a>
       </div>
       <router-link :to="{name:'AdminDashboard'}">관리자 대시보드</router-link>
     </div>
@@ -33,11 +33,21 @@
 </template>
 
 <script>
+import { computed } from 'vue'
+import { usePiniaStore } from '@/stores'
+
 export default {
   setup() {
 
+    const piniaStore = usePiniaStore()
 
-    return {}
+    const logout = () => {
+      piniaStore.logout()
+    }
+
+    return {
+      logout
+    }
   }
 }
 </script>

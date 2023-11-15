@@ -6,10 +6,14 @@
           <div class="container text-center">
             <div class="row">
               <div class="col-md-6">
-                <img src="https://www.foodsafetykorea.go.kr/common/ecmFileView.do?ecm_file_no=1Oj1205TJ5B" class="rounded img-fluid" alt="banner1">
+                <a href="https://www.foodsafetykorea.go.kr/portal/fooddanger/foodDirectImportView.do?menu_no=4901&menu_grp=MENU_NEW01">
+                  <img src="https://www.foodsafetykorea.go.kr/common/ecmFileView.do?ecm_file_no=1Oj1205TJ5B" class="rounded img-fluid" alt="banner1">
+                </a>
               </div>
               <div class="col-md-6">
-                <img src="https://www.foodsafetykorea.go.kr/common/ecmFileView.do?ecm_file_no=1OYPnPXPKzL" class="rounded img-fluid" alt="banner2">
+                <a href="https://radsafe.mfds.go.kr/">
+                  <img src="https://www.foodsafetykorea.go.kr/common/ecmFileView.do?ecm_file_no=1OYPnPXPKzL" class="rounded img-fluid" alt="banner2">
+                </a>
               </div>
             </div>
           </div>
@@ -24,8 +28,8 @@
     </section>
     <aside class="d-none d-lg-block">
       <section id="userContainer">
-        <WidgetLogin></WidgetLogin>
-        <widget-user-info></widget-user-info>
+        <WidgetLogin v-if="isLoggedIn === 'false'"></WidgetLogin>
+        <widget-user-info v-else></widget-user-info>
       </section>
       <section id="chat" class="mt-4">
         <WidgetChatBot></WidgetChatBot>
@@ -35,11 +39,15 @@
 </template>
 
 <script>
+import { ref, computed, onMounted } from 'vue'
+import { usePiniaStore } from '@/stores'
+import * as AdminAPI from '@/services/admin.js'
 import WidgetPhoto from "@compo/widget/WidgetPhoto.vue";
 import WidgetList from "@compo/widget/WidgetList.vue";
 import WidgetLogin from "@compo/widget/WidgetLogin.vue";
 import WidgetChatBot from "@compo/widget/WidgetChatBot.vue";
 import WidgetUserInfo from "@compo/widget/WidgetUserInfo.vue";
+
 export default {
   components: {
     WidgetUserInfo,
@@ -49,9 +57,14 @@ export default {
     WidgetChatBot,
   },
   setup() {
+    const isAdmin = ref()
+    const piniaStore = usePiniaStore()
+    const isLoggedIn = computed(() => piniaStore.isLoggedIn)
+    const nickname = computed(() => piniaStore.nickname)
 
-
-    return {}
+    return {
+      isAdmin, isLoggedIn, nickname,
+    }
   }
 }
 </script>
