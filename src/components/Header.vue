@@ -1,7 +1,7 @@
 <template>
   <div>
     <section id="sub">
-      <ul class="container justify-content-end align-items-center px-2 py-2 d-flex list-unstyled">
+      <ul v-if="isLoggedIn === 'false'" class="container justify-content-end align-items-center px-2 py-2 d-flex list-unstyled">
         <li>
           <router-link class="nav-link" :to="{name: 'Join'}">회원가입</router-link>
         </li>
@@ -10,6 +10,21 @@
         </li>
         <li>
           <router-link class="nav-link" :to="{name: 'Login'}">로그인</router-link>
+        </li>
+      </ul>
+      <ul v-else class="container justify-content-end align-items-center px-2 py-2 d-flex list-unstyled">
+        <li>
+          <router-link class="nav-link" :to="{name: 'Profile', params: { nickname: nickname }}">프로필</router-link>
+        </li>
+        <li class="text-muted mx-2">
+          |
+        </li>
+        <li>
+          <a class="nav-link" @click="logout">로그아웃</a>
+        </li>
+        <li v-if="isAdmin === true">
+          |
+          <router-link  class="nav-link" :to="{name: 'AdminDashboard'}">관리자</router-link>
         </li>
       </ul>
     </section>
@@ -27,8 +42,9 @@
               <li class="nav-item dropdown fs-5">
                 <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false" style="color: black">커뮤니티</a>
                 <ul class="dropdown-menu">
-                  <li>
-                    <router-link :to="{name: 'PostList'}" class="dropdown-item">공지사항</router-link>
+                  <li v-for="notice in noticeList">
+                    <!-- @TODO: 서브 드롭다운 필요. 공지사항 게시판으로 임시 조치 -->
+                    <router-link :to="{name: 'PostList', params: { board_id: notice.board_id }, query: { page: 1 } }">{{ notice.name }}</router-link>
                   </li>
                 </ul>
               </li>
@@ -51,11 +67,56 @@
 </template>
 
 <script>
+import { ref, computed, onMounted } from 'vue'
+import { usePiniaStore } from '@/stores'
+import * as AdminAPI from '@/services/admin.js'
+
 export default {
   setup() {
+    onMounted(() => {
+      getBoardList('NOTICE')
+      getBoardList('GENERAL')
+      getBoardList('ANONYMOUS')
+      getBoardList('QUESTION')
+      checkAdmin()
+    })
 
+    const isAdmin = ref()
+    const piniaStore = usePiniaStore()
+    const isLoggedIn = computed(() => piniaStore.isLoggedIn)
+    const nickname = computed(() => piniaStore.nickname)
 
-    return {}
+    const noticeList = ref('')
+    const generalList = ref('')
+    const anonymousList = ref('')
+    const questionList = ref('')
+
+    const getBoardList = (category) => {
+      AdminAPI.getBoardList(category).then((res) => {
+        if (category === 'NOTICE')
+        noticeList.value = res.data
+      if (category === 'GENERAL')
+          generalList.value = res.data
+        if (category === 'ANONYMOUS')
+          anonymousList.value = res.data
+        if (category === 'QUESTION')
+          questionList.value = res.data
+      })
+    }
+
+    const checkAdmin = () => {
+      AdminAPI.isAdmin().then(() => isAdmin.value = true).catch(() => isAdmin.value = false)
+    }
+
+    const logout = () => {
+      piniaStore.logout()
+    }
+
+    return {
+      isAdmin, isLoggedIn, nickname,
+      noticeList, generalList, anonymousList, questionList,
+      logout
+    }
   }
 }
 </script>
