@@ -88,5 +88,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
+.page-item {
+  cursor: pointer;
+}
 </style>
