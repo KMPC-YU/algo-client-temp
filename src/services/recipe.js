@@ -94,3 +94,8 @@ export function updateComment(recipeId, commentId, comment) {
 export function deleteComment(recipeId, commentId) {
   return instance.delete(`/api/v1/recipes/${recipeId}/comments/${commentId}`)
 }
+
+// 레시피 메인 사진 업로드
+export function uploadRecipeMainImg(formData) {
+  return instance.post(`/api/v1/recipes/images`, formData)
+}
