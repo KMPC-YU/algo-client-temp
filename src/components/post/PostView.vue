@@ -22,15 +22,6 @@
           <button class="btn btn-light"><i class="bi bi-trash3"></i>&nbsp;삭제</button>
         </div>
       </div>
-
-      <h5 class="fw-bold mt-4">댓글 (0)</h5>
-      <div class="row card-body comment mx-1">
-        <textarea class="comment-input" v-model="comment" placeholder="댓글을 남겨보세요"/>
-        <div class="d-flex justify-content-end comment-write mt-3">
-          <button class="btn btn-secondary">등록</button>
-        </div>
-      </div>
-      <hr/>
       <comment></comment>
     </div>
   </div>
