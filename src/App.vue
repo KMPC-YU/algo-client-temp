@@ -23,8 +23,8 @@
 </template>
 
 <script>
-import Header from "@compo/Header.vue";
-import Footer from "@compo/Footer.vue";
+import Header from '@compo/Header.vue'
+import Footer from '@compo/Footer.vue'
 
 export default {
   components: {
