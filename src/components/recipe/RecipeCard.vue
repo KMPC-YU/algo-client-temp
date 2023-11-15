@@ -1,29 +1,30 @@
 <template>
-  <router-link :to="{name:'RecipeView'}">
+  <router-link :to="{name:'RecipeView', params: { recipe_id: recipeData.recipe_id }}">
     <div class="card">
-      <img src="https://via.placeholder.com/150" alt="recipe thumbnail" class="card-img-top">
+      <img :src="recipeData.recipe_thumbnail" alt="recipe thumbnail" class="card-img-top">
       <div class="card-body">
-        <span class="title fw-medium">레시피 제목입니다.</span>
+        <span class="title fw-medium">{{recipeData.recipe_title}}</span>
         <div class="my-2 d-flex">
           <div class="pf_img">
             <img src="http://algo.dothome.co.kr/img/no_profile.gif" alt="profile_image">
-            <span class="mx-2">관리자</span>
+            <span class="mx-2">{{ recipeData.author }}</span>
           </div>
         </div>
         <div class="d-flex small">
           <div class="d-flex align-items-center">
             <span class="text-warning me-1">
+<!--              TODO: 별점 표시-->
               <i class="bi bi-star-fill"></i>
               <i class="bi bi-star-fill"></i>
               <i class="bi bi-star-fill"></i>
               <i class="bi bi-star-fill"></i>
               <i class="bi bi-star-fill"></i>
             </span>
-            <span class="recipe-info text-muted">(5.0)</span>
+            <span class="recipe-info text-muted">({{recipeData.rating}})</span>
           </div>
           <div class="recipe-info d-flex align-items-center ms-3">
-            <span class="text-muted">조회수 22</span>
-            <span class="text-muted ms-2">좋아요 12</span>
+            <span class="text-muted">조회수 {{ recipeData.view_count }}</span>
+            <span class="text-muted ms-2">좋아요 {{ recipeData.like_count }}</span>
           </div>
         </div>
       </div>
@@ -32,11 +33,27 @@
 </template>
 
 <script>
+import {ref} from "vue";
+import recipes from "../../views/Recipes.vue";
+
 export default {
-  setup() {
+  computed: {
+    recipes() {
+      return recipes
+    }
+  },
+  props: {
+    recipeData: {
+      type: Object,
+      required: true,
+    }
+  },
+  setup(props, { emit }) {
+    const recipeData = ref(props.recipeData)
 
-
-    return {}
+    return {
+      recipeData,
+    }
   }
 }
 </script>

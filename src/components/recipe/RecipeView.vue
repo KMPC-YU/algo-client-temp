@@ -121,16 +121,6 @@
         </div>
       </div>
     </div>
-    <div class="row justify-content-center mb-4">
-      <!-- tags -->
-      <div class="col-10">
-        <i class="bi bi-tag-fill text-primary"></i>
-        <span>&nbsp;</span>
-        <span v-for="tag in recipeData.recipe_tag">
-          <a href="#">#{{ tag }}</a>&nbsp;
-        </span>
-      </div>
-    </div>
     <div class="text-center">
       <div class="btn-group dropup dropup-center mx-2">
         <button type="button" class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
@@ -167,19 +157,95 @@
     <div class="row justify-content-center mt-4">
       <hr class="col-10">
       <div class="col-10 mt-1">
-        <CommentWrite boardID="Recipe" :postID="recipeId"/>
+        <Comment boardID="Recipe" :postID="recipeId"/>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import Comment from '@/components/comment/Comment.vue'
+import * as RecipeAPI from '@/services/recipe.js'
+import router from '@/router'
+import { useRoute } from 'vue-router'
+import Swal from 'sweetalert2'
+import { allergyData } from "@compo/allergyData.js";
+import { ref, computed, onMounted } from 'vue'
 
 export default {
+  components: {
+    Comment,
+  },
   setup() {
+    onMounted(() => {
+      getRecipeDetail()
+    })
 
+    const route = useRoute()
+    const recipeId = computed(() => route.params.recipe_id)
+    const recipeData = ref({})
+    const allergyList = ref([])
+    const rating = ref([ 5.0, 4.5, 4.0, 3.5, 3.0, 2.5, 2.0, 1.5, 1.0, 0.5, 0.0 ])
+
+    const getRecipeDetail = () => {
+      RecipeAPI.getRecipe(recipeId.value)
+          .then((res) => {
+            recipeData.value = res.data
+            const temp = res.data.ingredients.map(e =>  e.allergy) // ex. [['BEEF', 'CHICKEN', 'EGGS'], [], ['WHEAT']]
+            // console.log(recipeData.value)
+            allergyList.value = temp.map(e => {
+              return e.length === 0 ? '-' :
+                  e.map(item => allergyData.value.find(allergy => allergy.name === item)?.mean)
+                      .filter(mean => mean !== undefined).join(' ')
+            })
+            // console.log(allergyList.value)
+          })
+    }
+
+    const onRating = (rate) => { // 서버는 0 ~ 10으로 처리하므로 *2 해야함
+      if (recipeData.value.user_rate === null && rate !== null) { // 처음 별점 부여할 때
+        RecipeAPI.createRates(recipeId.value, rate * 2).then(() => getRecipeDetail())
+      } else if (rate !== null) { // 별점을 수정할 때
+        RecipeAPI.updateRates(recipeId.value, rate * 2).then(() => getRecipeDetail())
+      } else if (recipeData.value.user_rate !== null) { // 별점을 삭제할 때
+        RecipeAPI.deleteRates(recipeId.value).then(() => getRecipeDetail())
+      }
+    }
+
+    const favorite = () => {
+      RecipeAPI.favorite(recipeData.value.is_like, recipeId.value)
+          .then(() => getRecipeDetail())
+    }
+
+    const deleteRecipe = () => {
+      Swal.fire({
+        title: '레시피를 삭제하시겠습니까?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: '삭제',
+        cancelButtonText: '취소',
+      }).then((res) => {
+        if (res.isConfirmed) {
+          RecipeAPI.deleteRecipe(recipeId.value)
+              .then(() => { router.go(-1) })
+        }
+      })
+    }
+
+    const gotoList = () => {
+      router.push({ name: 'RecipeList' }).then(() => location.reload())
+    }
     return {
-
+      recipeId,
+      recipeData,
+      allergyList,
+      rating,
+      onRating,
+      favorite,
+      deleteRecipe,
+      gotoList,
     }
   }
 }
