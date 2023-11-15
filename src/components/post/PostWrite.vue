@@ -1,14 +1,17 @@
 <template>
   <div>
     <div class="fw-bold fs-4 mb-2">
-      공지사항 글쓰기
+      {{ boardName }} 글쓰기
     </div>
     <div class="mt-3">
       <div class="form-check">
-        <input class="form-check-input" type="checkbox" value="" id="notice">
+        <input class="form-check-input" type="checkbox" value="" id="notice" v-model="is_notice">
         <label class="form-check-label" for="notice">
           공지
         </label>
+        <span v-if="boardType === 'QUESTION'">
+          <input class="form-control" placeholder="채택 포인트" id="point" v-model="point" style="width: 100px;">
+        </span>
       </div>
       <div class="form-group">
         <input type="text" v-model="title" class="form-control mt-3 mb-3" id="title" placeholder="글 제목을 입력해주세요." maxlength="50" required>
@@ -20,19 +23,22 @@
     </div>
     <div class="write-button gap-2">
       <button class="btn btn-secondary" @click="cancel">취소</button>
-      <button class="btn btn-primary" @click="submit">작성완료</button>
+      <button class="btn btn-primary"  @click="postWrite">작성완료</button>
     </div>
   </div>
 </template>
 
 <script>
+import { useEditor, EditorContent } from '@tiptap/vue-3'
 import Highlight from '@tiptap/extension-highlight'
 import TaskItem from '@tiptap/extension-task-item'
 import TaskList from '@tiptap/extension-task-list'
 import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
 
-import { useEditor, EditorContent } from '@tiptap/vue-3'
+import {ref, computed, onMounted, watch} from "vue";
+import { useRoute } from 'vue-router'
+import router from "@/router/index.js";
 import MenuBar from '@compo/editor/MenuBar.vue'
 
 export default {
@@ -51,9 +57,78 @@ export default {
         TaskList,
       ],
     })
+    const route = useRoute()
+    const boardID = computed(() => {
+      return route.params.board_id
+    })
+
+    const boardName = ref('')
+
+    watch(boardID, () => {
+      getBoardInfo()
+    })
+
+    onMounted(() => {
+      getBoardInfo()
+      if (route.path.endsWith('modify')) getPostDetail()
+    })
+
+    const getBoardInfo = () => {
+      PostAPI.BoardInfo(boardID.value).then((res) => {
+        boardName.value = res.data.board_name
+        boardType.value = res.data.board_type
+      })
+    }
+
+    const getPostDetail = () => {
+      let postID = route.params.post_id
+      PostAPI.postDetail(boardID.value, postID).then((res) => {
+        title.value = res.data.title
+        editor.value.commands.setContent(res.data.content)
+        is_notice.value = res.data.notice
+        point.value = res.data.point
+      }).catch((err) => {
+        console.error(err)
+      })
+    }
+
+    const title = ref('')
+    const is_notice = ref(false)
+    const boardType = ref('')
+    const point = ref(0)
+
+    const postWrite = () => {
+      if (title.value === '' || editor.value.getHTML() === '<p></p>') {
+        alert('게시글 내용을 모두 작성해주세요.')
+      } else {
+        if (route.path.endsWith('modify')) {
+          PostAPI.postModify(boardID.value, route.params.post_id, {
+            title: title.value,
+            content: editor.value.getHTML(),
+            point: point.value,
+            notice: is_notice.value,
+          }).then(() => {
+            router.push({ name: 'PostList', params: { board_id: boardID.value }, query: { page: 1 } })
+          })
+        } else {
+          PostAPI.postWrite(boardID.value, {
+            title: title.value,
+            content: editor.value.getHTML(),
+            point: point.value,
+            notice: is_notice.value,
+          }).then(() => {
+            router.push({ name: 'PostList', params: { board_id: boardID.value }, query: { page: 1 } })
+          })
+        }
+      }
+    }
+
+    const cancel = () => {
+      router.go(-1)
+    }
 
     return {
-      editor,
+      editor, title, postWrite, is_notice, boardID, boardName, boardType, point, cancel
     }
   }
 }

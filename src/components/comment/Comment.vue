@@ -242,6 +242,20 @@ img {
   width: 50px;
   height: 50px;
 }
+.comment {
+  background-color: #f8f9fc;
+  border-radius: 8px;
+}
+.comment-input {
+  background-color: unset;
+  border: unset;
+}
+textarea {
+  outline: none;
+}
+.comment-write {
+  padding-right: unset;
+}
 .comment-content {
   float: left;
   width: 90%;
