@@ -7,11 +7,11 @@ const router = createRouter({
     { path: '/:pathMatch(.*)', name: 'not-found', component: () => import('@compo/NotFound.vue') },
     { path: '/', name: 'Main', component: () => import('@views/Home.vue') },
     { path: '/login', name: 'Login', component: () => import('@views/Login.vue'),
-      // beforeEnter: (to, from, next) => {
-      //   const piniaStore = usePiniaStore()
-      //   if(piniaStore.isLoggedIn === 'false') next()
-      //   else next('/')
-      // }
+      beforeEnter: (to, from, next) => {
+        const piniaStore = usePiniaStore()
+        if(piniaStore.isLoggedIn === 'false') next()
+        else next('/')
+      }
     },
     { path: '/signup', name: 'Join', component: () => import('@views/Join.vue'),
       beforeEnter: (to, from, next) => {
@@ -25,29 +25,29 @@ const router = createRouter({
     { path: '/boards/:board_id/posts/:post_id/modify', name: 'PostModify', component: () => import('@compo/post/PostWrite.vue') },
     {
       path: '/foods', name: 'FoodList', component: () => import('@views/Foods.vue'),
-      // beforeEnter: (to, from, next) => {
-      //   const piniaStore = usePiniaStore()
-      //   if (piniaStore.isLoggedIn === 'false') {
-      //     alert('로그인이 필요한 서비스입니다.')
-      //     next('/login')
-      //   } else {
-      //     next()
-      //   }
-      // }
+      beforeEnter: (to, from, next) => {
+        const piniaStore = usePiniaStore()
+        if (piniaStore.isLoggedIn === 'false') {
+          alert('로그인이 필요한 서비스입니다.')
+          next('/login')
+        } else {
+          next()
+        }
+      }
     },
     { path: '/foods/write', name: 'FoodWrite', component: () => import('@compo/food/FoodWrite.vue') },
     { path: '/foods/:food_id', name: 'FoodView', component: () => import('@compo/food/FoodView.vue') },
     { path: '/foods/:food_id/modify', name: 'FoodModify', component: () => import('@compo/food/FoodWrite.vue') },
     { path: '/recipes', name: 'RecipeList', component: () => import('@views/Recipes.vue'),
-      // beforeEnter: (to, from, next) => {
-      //   const piniaStore = usePiniaStore()
-      //   if (piniaStore.isLoggedIn === 'false') {
-      //     alert('로그인이 필요한 서비스입니다.')
-      //     next('/login')
-      //   } else {
-      //     next()
-      //   }
-      // }
+      beforeEnter: (to, from, next) => {
+        const piniaStore = usePiniaStore()
+        if (piniaStore.isLoggedIn === 'false') {
+          alert('로그인이 필요한 서비스입니다.')
+          next('/login')
+        } else {
+          next()
+        }
+      }
     },
     { path: '/recipes/write', name: 'RecipeWrite', component: () => import('@compo/recipe/RecipeWrite.vue') },
     { path: '/recipes/:recipe_id', name: 'RecipeView', component: () => import('@compo/recipe/RecipeView.vue') },
