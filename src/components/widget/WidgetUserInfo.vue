@@ -5,26 +5,22 @@
         <img src="http://algo.dothome.co.kr/img/no_profile.gif" alt=""/>
       </div>
       <div id="nickName">
-        <strong>관리자님</strong>
+        <strong>{{ piniaStore.nickname }} 님</strong>
       </div>
     </div>
     <div>
       <div>
-        <a href="/user/myPosts">
-          <span>게시글</span>
-          0개
-        </a>
+        <span>게시글</span>
+        {{postCount}}개
       </div>
       <div>
-        <a href="/user/myComments">
-          <span>댓글 </span>
-          0개
-        </a>
+        <span>댓글 </span>
+        {{commentCount}}개
       </div>
     </div>
     <div class="buttons">
       <div class="split">
-        <!-- <router-link :to="{name: 'Profile', params: { nickname: nickname }}">프로필</router-link> -->
+         <router-link :to="{name: 'Profile', params: { nickname: piniaStore.nickname }}">프로필</router-link>
         <a href="#" @click="logout">로그아웃</a>
       </div>
       <router-link :to="{name:'AdminDashboard'}">관리자 대시보드</router-link>
@@ -33,20 +29,38 @@
 </template>
 
 <script>
-import { computed } from 'vue'
+import {onBeforeMount, onMounted, ref} from 'vue'
 import { usePiniaStore } from '@/stores'
+import * as ProfileAPI from "@/services/profile.js";
 
 export default {
-  setup() {
 
+  setup() {
     const piniaStore = usePiniaStore()
+    const postCount = ref('0')
+    const commentCount = ref('0')
+
+    onMounted(() => {
+      getProfileData()
+    })
 
     const logout = () => {
       piniaStore.logout()
     }
 
+    const getProfileData = () => {
+      ProfileAPI.getProfileData(piniaStore.nickname).then((res) => {
+        console.log(res.data)
+        postCount.value = res.data.count.post
+        commentCount.value = res.data.count.comment
+      })
+    }
+
     return {
-      logout
+      piniaStore,
+      logout,
+      postCount,
+      commentCount,
     }
   }
 }
