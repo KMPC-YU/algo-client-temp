@@ -1,27 +1,40 @@
 <template>
-  <router-link :to="{name:'FoodView'}">
-    <img src="https://via.placeholder.com/150" alt="recipe thumbnail" class="card card-img-top">
+  <router-link :to="{name:'FoodView', params: {'food_id': foodData.id}}">
+    <img :src="foodData.food_image_url" alt="recipe thumbnail" class="card card-img-top">
     <i type="button" class="like bi bi-star"></i>
   </router-link>
   <div class="my-2 mb-4">
-    <span class="title fw-medium">식품 제목입니다.</span>
+    <span class="title fw-medium d-flex d-block">{{foodData.food_name}}</span>
     <div class="recipe-info d-flex justify-content-start small text-muted">
       <i class="bi bi-star"></i>
-      <span class="mx-1">9</span>
+      <span class="mx-1">{{ foodData.like_count }}</span>
     </div>
   </div>
 </template>
 
 <script>
-export default {
-  setup() {
+import {ref} from "vue";
 
-    return {}
+export default {
+  props: {
+    foodData: {
+      type: Object,
+      required: true,
+    }
+  },
+  setup(props, { emit }) {
+    const foodData = ref(props.foodData)
+
+    console.log(foodData)
+
+    return {
+      foodData,
+    }
   }
 }
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 a {
   color: black;
   text-decoration: none;

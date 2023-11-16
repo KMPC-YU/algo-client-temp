@@ -60,9 +60,11 @@
                   </table>
                 </div>
               </div>
-              <router-link v-if="isAdmin" class="btn btn-primary mt-2"
-                           :to="{ name: 'FoodWrite', query: { id: foodData.id, editable: true } }">수정</router-link>
-              <button v-if="isAdmin" class="btn btn-danger mt-2" @click="foodDelete(foodData.id)">삭제</button>
+              <div class="d-flex justify-content-end mt-2">
+                <router-link v-if="isAdmin" class="btn btn-primary me-2"
+                             :to="{ name: 'FoodWrite', query: { id: foodData.id, editable: true } }">수정</router-link>
+                <button v-if="isAdmin" class="btn btn-danger" @click="foodDelete(foodData.id)">삭제</button>
+              </div>
             </div>
           </div>
         </div>
@@ -104,13 +106,13 @@
 
 <script>
 import { useRoute, useRouter } from 'vue-router'
-import { onMounted, reactive, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import * as FoodAPI from '@/services/food.js'
 import Swal from 'sweetalert2'
 // import store from '@/store'
 // import Loading from '@compo/common/Loading'
-import NotFound from '@compo/common/ErrorPage'
-import { allergyData } from '@/components/common/allergyData.js'
+import NotFound from '@compo/NotFound.vue'
+import { allergyData } from '@compo/allergyData.js'
 
 export default {
   components: {
@@ -204,10 +206,9 @@ export default {
             console.error(err)
           })
 
-      // TODO: 식품 추천 API 임시 비활성화
-      // FoodAPI.getRecommendFood()
-      //   .then(res => recFoodList.value = res.data)
-      //   .catch(err => console.error(err))
+      FoodAPI.getRecommendFood()
+        .then(res => recFoodList.value = res.data)
+        .catch(err => console.error(err))
 
       checkPermission()
     })

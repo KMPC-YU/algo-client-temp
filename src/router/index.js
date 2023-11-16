@@ -35,7 +35,7 @@ const router = createRouter({
         }
       }
     },
-    { path: '/foods/write', name: 'FoodWrite', component: () => import('@compo/food/FoodWrite.vue') },
+    { path: '/foods/write', name: 'FoodWrite', component: () => import('@compo/food/FoodWrite.vue')/*, props: true*/ },
     { path: '/foods/:food_id', name: 'FoodView', component: () => import('@compo/food/FoodView.vue') },
     { path: '/foods/:food_id/modify', name: 'FoodModify', component: () => import('@compo/food/FoodWrite.vue') },
     { path: '/recipes', name: 'RecipeList', component: () => import('@views/Recipes.vue'),
