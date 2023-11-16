@@ -37,11 +37,6 @@ import {ref} from "vue";
 import recipes from "../../views/Recipes.vue";
 
 export default {
-  computed: {
-    recipes() {
-      return recipes
-    }
-  },
   props: {
     recipeData: {
       type: Object,
